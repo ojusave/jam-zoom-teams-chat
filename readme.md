@@ -55,3 +55,60 @@ Now you have successfully configured your Marketplace App and obtained the neces
 2. Click on the "Authenticate with Zoom" button to start the OAuth flow.
 3. After successful authentication, you'll be redirected to the home page.
 4. Use the provided interface to select a channel and send a message.
+
+## Explaining server.js Zoom Functions:
+1. app.get('/auth/zoom', (req, res) => {...}):
+
+   No payload is sent in this function.
+   It constructs the Zoom OAuth URL: https://zoom.us/oauth/authorize?response_type=code&client_id=${config.CLIENT_ID}&redirect_uri=${config.REDIRECT_URI}
+   The function redirects the user to this URL.
+2. app.get('/oauth/callback', async (req, res) => {...}):
+   Receives: Authorization code in query parameters
+   Sends: POST request to 'https://zoom.us/oauth/token' Payload:
+      grant_type: 'authorization_code'
+      code: The received authorization code
+      redirect_uri: config.REDIRECT_URI
+   Headers:
+      Authorization: Basic auth using CLIENT_ID and CLIENT_SECRET
+      Receives: Access token in response
+      Stores: access_token in session
+3. app.get('/api/channels', async (req, res) => {...}):
+   Sends: 
+      GET request to 'https://api.zoom.us/v2/chat/users/me/channels'
+   Headers:
+      Authorization: Bearer ${access_token}
+      Receives: List of channels
+      Returns: JSON array of channels to client
+4. app.post('/api/send-message', async (req, res) => {...}):
+   Receives: channelId and messageText in request body
+   Sends: POST request to 'https://api.zoom.us/v2/chat/users/me/messages'
+   Headers:
+   Authorization: Bearer ${access_token}
+   Content-Type: 'application/json'
+   Payload:
+     ```
+      {
+      to_channel: channelId,
+      message: messageText,
+      interactive_cards: [{
+         card_json: JSON.stringify({
+            content: {
+            body: [
+               { type: "message", text: "Check out this update on Jam." },
+               {
+                  type: "attachments",
+                  resource_url: "https://i0.wp.com/www.pardonyourfrench.com/wp-content/uploads/2022/05/strawberry-jam-5.jpg?fit=1170%2C1753&ssl=1",
+                  img_url: "https://i0.wp.com/www.pardonyourfrench.com/wp-content/uploads/2022/05/strawberry-jam-5.jpg?fit=1170%2C1753&ssl=1",
+                  information: {
+                  title: { text: "Jam Update" },
+                  description: { text: "This image shows the latest update on Jam." }
+                  }
+               },
+               { type: "message", text: "View on Jam", link: "https://jam.dev" }
+            ]
+            }
+         })
+      }]
+      }
+      ```
+   Returns: Success or failure message to client
