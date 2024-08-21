@@ -5,7 +5,7 @@ This project integrates Zoom Chat functionality into your application, allowing 
 ## Getting Started
 
 1. Clone this repository to your local machine.
-3. Install ngrok globally: `npm install -g ngrok`
+3. Install ngrok globally: `npm install`
 4. Create a `.env` file in the root directory with the following content:
 
 ```
