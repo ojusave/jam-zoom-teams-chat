@@ -11,7 +11,7 @@ This project integrates Zoom Chat functionality into your application, allowing 
 ```
 ZOOM_CLIENT_ID=your_client_id 
 ZOOM_CLIENT_SECRET=your_client_secret 
-ZOOM_REDIRECT_URI=https://your-ngrok-url.ngrok.io/auth/callback
+ZOOM_REDIRECT_URI=https://your-url/auth/callback
 ```
 
 ## Creating and Configuring a User-Managed OAuth App
@@ -27,7 +27,7 @@ Follow these steps to create and configure your user-managed OAuth app on the Zo
    - In the "Select how the app is managed" section, choose "User-managed".
    - Note your app credentials (client ID & client secret).
    - In the OAuth Information section:
-     - Enter your OAuth redirect URL (e.g., https://your-ngrok-url.ngrok.io/auth/callback).
+     - Enter your OAuth redirect URL (e.g., https://your-url.com/auth/callback).
      - Optionally enable Strict Mode URL and Subdomain check.
      - Add your app's URLs to the OAuth allow list.
 
