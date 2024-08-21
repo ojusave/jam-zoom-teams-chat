@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom Chat App</title>
+</head>
+<body>
+    <h1>Send a Jam to Zoom</h1>
+    <button id="authorize">Authorize with Zoom</button>
+
+    <div id="chat-controls" style="display: none;">
+        <h2>Select a Channel or Chat</h2>
+        <select id="channel-select">
+            <option value="" disabled selected>Select a channel or chat</option>
+        </select>
+        <textarea id="message-text" placeholder="Enter your message"></textarea>
+        <button id="send-message">Send Message</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

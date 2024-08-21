@@ -1,0 +1,15 @@
+{
+    "name": "zoom-chat-app",
+    "version": "1.0.0",
+    "description": "A Zoom Chat App that sends messages to Zoom channels or chats.",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "axios": "^0.27.2",
+        "dotenv": "^16.0.1",
+        "express": "^4.17.1",
+        "express-session": "^1.18.0"
+    }
+}
