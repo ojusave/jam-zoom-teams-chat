@@ -6,13 +6,14 @@ document.getElementById('authorize').addEventListener('click', () => {
 document.getElementById('send-message').addEventListener('click', async () => {
     const channelId = document.getElementById('channel-select').value;
     const messageText = document.getElementById('message-text').value;
+    const linkUrl = document.getElementById('link-url').value;  // Capture the link input
 
     const response = await fetch('/api/send-message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ channelId, messageText })
+        body: JSON.stringify({ channelId, messageText, linkUrl })  // Send the link along with the message
     });
 
     if (response.ok) {
@@ -21,6 +22,7 @@ document.getElementById('send-message').addEventListener('click', async () => {
         alert('Failed to send message.');
     }
 });
+
 
 // Fetch channels when the page loads
 window.onload = async () => {
