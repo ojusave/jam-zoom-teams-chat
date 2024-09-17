@@ -1,117 +1,98 @@
 # Zoom Chat Integration
 
-This project integrates Zoom Chat functionality into your application, allowing you to send messages and interact with Zoom channels.
+## Overview
 
-## Getting Started
+This project integrates Zoom Chat functionality into your application, allowing you to authenticate users, fetch Zoom channels, and send messages to these channels. It leverages the Zoom API and OAuth 2.0 for secure authentication and interaction.
 
-1. Clone this repository to your local machine.
-3. Install npm: `npm install`
-4. Create a `.env` file in the root directory with the following content:
+## Features
 
-```
-ZOOM_CLIENT_ID=your_client_id 
-ZOOM_CLIENT_SECRET=your_client_secret 
-ZOOM_REDIRECT_URI=https://your-url/auth/callback
-```
+- OAuth 2.0 authentication with Zoom
+- Fetch user's Zoom channels
+- Send messages to Zoom channels with links
 
-## Creating and Configuring a User-Managed OAuth App
+## Prerequisites
 
-Follow these steps to create and configure your user-managed OAuth app on the Zoom App Marketplace:
+- Node.js (v12 or higher recommended)
+- npm (comes with Node.js)
+- A Zoom account
+- A registered Zoom OAuth app (instructions below)
 
-1. Log onto the [Zoom App Marketplace](https://marketplace.zoom.us/).
+## Setup
 
-2. Click Develop > Build App.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ojusave/zoom-chat-integration.git
+   cd zoom-chat-integration
+   ```
 
-3. On the Basic Info page:
-   - Update your app's name.
-   - In the "Select how the app is managed" section, choose "User-managed".
-   - Note your app credentials (client ID & client secret).
-   - In the OAuth Information section:
-     - Enter your OAuth redirect URL (e.g., https://your-url.com/auth/callback).
-     - Optionally enable Strict Mode URL and Subdomain check.
-     - Add your app's URLs to the OAuth allow list.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-4. On the Scopes page:
-   - Click "Add Scopes".
-   - Select the Zoom product and check the required scopes:
-     - chat_channel:read
-     - chat_channel:write
-     - chat_message:read
-     - chat_message:write
-   - Provide a clear description for each selected scope.
+3. Create a `.env` file in the root directory with the following content:
+   ```plaintext
+   ZOOM_CLIENT_ID=your_client_id
+   ZOOM_CLIENT_SECRET=your_client_secret
+   ZOOM_REDIRECT_URI=http://localhost:4000/oauth/callback
+   PORT=4000
+   ```
+   Replace `your_client_id` and `your_client_secret` with your Zoom OAuth app credentials.
 
-5. On the Local Test page:
-   - Add the app to your account by clicking "Add App Now" and then "Allow".
-   - Preview your app listing by clicking "Preview Your App Listing Page".
-   - To share with internal users, go to the Authorization URL section, click "Generate" and then "Copy".
+4. Start the server:
+   ```bash
+   node server.js
+   ```
 
-Now you have successfully configured your Marketplace App and obtained the necessary credentials. You can use these to authenticate and interact with the Zoom Chat API in your application.
+## Creating a Zoom OAuth App
 
-4. Start the server by running `node server.js`.
+1. Go to the [Zoom App Marketplace](https://marketplace.zoom.us/) and sign in.
+2. Click "Develop" > "Build App".
+3. Choose "OAuth" as the app type.
+4. Fill in the app information:
+   - App Name: Your choice (e.g., "My Zoom Chat Integration")
+   - App Type: User-managed app
+   - Redirect URL: `http://yourdomain.com/oauth/callback` (adjust if using a different port)
+5. Add the following scopes:
+   - `chat_channel:read`
+   - `chat_channel:write`
+   - `chat_message:read`
+   - `chat_message:write`
+6. Save and note down your Client ID and Client Secret.
 
-## Testing the Application
+## Usage
 
-1. Open your browser and navigate to `http://localhost:3000`.
-2. Click on the "Authenticate with Zoom" button to start the OAuth flow.
+1. Navigate to `http://localhost:4000` in your browser.
+2. Click "Authenticate with Zoom" to start the OAuth flow.
 3. After successful authentication, you'll be redirected to the home page.
-4. Use the provided interface to select a channel and send a message.
+4. Use the interface to select a channel and send a message.
 
-## Explaining server.js Zoom Functions:
-1. app.get('/auth/zoom', (req, res) => {...}):
-   
-   No payload is sent in this function.
-   It constructs the Zoom OAuth URL: https://zoom.us/oauth/authorize?response_type=code&client_id=${config.CLIENT_ID}&redirect_uri=${config.REDIRECT_URI}
-   The function redirects the user to this URL.
+## API Endpoints
 
-2. app.get('/oauth/callback', async (req, res) => {...}):
-   
-   Receives: Authorization code in query parameters
-   Sends: 
-      POST request to 'https://zoom.us/oauth/token' Payload:
-         grant_type: 'authorization_code'
-         code: The received authorization code
-         redirect_uri: config.REDIRECT_URI
-      Headers:
-         Authorization: Basic auth using CLIENT_ID and CLIENT_SECRET
-      Receives: Access token in response
-      Stores: access_token in session
-3. app.get('/api/channels', async (req, res) => {...}):
-   Sends: 
-      GET request to 'https://api.zoom.us/v2/chat/users/me/channels'
-   Headers:
-      Authorization: Bearer ${access_token}
-      Receives: List of channels
-      Returns: JSON array of channels to client
-4. app.post('/api/send-message', async (req, res) => {...}):
-   Receives: channelId and messageText in request body
-   Sends: POST request to 'https://api.zoom.us/v2/chat/users/me/messages'
-   Headers:
-      Authorization: Bearer ${access_token}
-      Content-Type: 'application/json'
-      Payload:
-      ```
-         {
-         to_channel: channelId,
-         message: messageText,
-         interactive_cards: [{
-            card_json: JSON.stringify({
-               content: {
-               body: [
-                  { type: "message", text: "Check out this update on Jam." },
-                  {
-                     type: "attachments",
-                     resource_url: "https://i0.wp.com/www.pardonyourfrench.com/wp-content/uploads/2022/05/strawberry-jam-5.jpg?fit=1170%2C1753&ssl=1",
-                     img_url: "https://i0.wp.com/www.pardonyourfrench.com/wp-content/uploads/2022/05/strawberry-jam-5.jpg?fit=1170%2C1753&ssl=1",
-                     information: {
-                     title: { text: "Jam Update" },
-                     description: { text: "This image shows the latest update on Jam." }
-                     }
-                  },
-                  { type: "message", text: "View on Jam", link: "https://jam.dev" }
-               ]
-               }
-            })
-         }]
-         }
-      ```
-   Returns: Success or failure message to client
+- `GET /auth/zoom`: Initiates the Zoom OAuth flow
+- `GET /oauth/callback`: Handles the OAuth callback from Zoom
+- `GET /api/channels`: Fetches the user's Zoom channels
+- `POST /api/send-message`: Sends a message to a Zoom channel
+
+## File Structure
+
+```
+.
+├── config/
+│   └── config.js
+├── controllers/
+│   ├── zoomAuth.js
+│   ├── zoomChannels.js
+│   └── zoomMessages.js
+├── utils/
+│   └── tokenManager.js
+├── .env
+├── package.json
+├── README.md
+└── server.js
+```
+## Acknowledgements
+
+- [Zoom API Documentation](https://marketplace.zoom.us/docs/api-reference/introduction)
+- [Express.js](https://expressjs.com/)
+- [Axios](https://axios-http.com/)
